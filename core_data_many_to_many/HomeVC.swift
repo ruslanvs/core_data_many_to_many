@@ -14,11 +14,11 @@ class HomeVC: UIViewController {
     @IBOutlet weak var pickerView: UIPickerView!
     var persons = PersonModel.shared.getAll()
     var languages = LanguageModel.shared.getAll()
-    var scores = ScoreModel.shared.getAll()
-    
+    var scores = [Score]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tableView.dataSource = self
         tableView.delegate = self
         pickerView.dataSource = self
@@ -27,8 +27,9 @@ class HomeVC: UIViewController {
 //        seedPersons()
 //        seedLanguages()
 //        seedScores()
+        scores = ScoreModel.shared.getAll( for: languages[0] )
 //        printScoresbyStudents()
-        printScores()
+//        printScores()
     }
     
     func seedPersons(){
@@ -67,6 +68,7 @@ class HomeVC: UIViewController {
         ScoreModel.shared.create(person: persons[4], language: languages[4], score: 99)
         ScoreModel.shared.create(person: persons[4], language: languages[0], score: 92)
         ScoreModel.shared.create(person: persons[4], language: languages[1], score: 87)
+        ScoreModel.shared.create(person: persons[4], language: languages[3], score: 82)
     }
     
     func printScoresbyStudents() {
@@ -83,7 +85,7 @@ class HomeVC: UIViewController {
     }
     
     func printScores() {
-        for score in ScoreModel.shared.getAll(){
+        for score in scores {
             print( score.person!.name, score.language!.name, score.score )
         }
     }
@@ -95,13 +97,14 @@ class HomeVC: UIViewController {
 
 extension HomeVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return persons.count
+//        return persons.count
+        return scores.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableCell", for: indexPath)
-        cell.textLabel?.text = persons[indexPath.row].name
-//        cell.detailTextLabel?.text = "\(persons[indexPath.row].scores?[0])"
+        cell.textLabel?.text = scores[indexPath.row].person?.name
+        cell.detailTextLabel?.text = String(scores[indexPath.row].score)
         
         return cell
     }
@@ -117,5 +120,10 @@ extension HomeVC: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return languages[row].name
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        scores = ScoreModel.shared.getAll( for: languages[row] )
+        tableView.reloadData()
     }
 }
