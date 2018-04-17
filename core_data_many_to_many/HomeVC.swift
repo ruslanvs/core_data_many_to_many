@@ -10,26 +10,112 @@ import UIKit
 
 class HomeVC: UIViewController {
 
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var pickerView: UIPickerView!
+    var persons = PersonModel.shared.getAll()
+    var languages = LanguageModel.shared.getAll()
+    var scores = ScoreModel.shared.getAll()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        tableView.dataSource = self
+        tableView.delegate = self
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        
+//        seedPersons()
+//        seedLanguages()
+//        seedScores()
+//        printScoresbyStudents()
+        printScores()
+    }
+    
+    func seedPersons(){
+        let personNames = ["Peter", "Yao", "Maret", "Tony", "Namoto"]
+        for name in personNames {
+            PersonModel.shared.create( name: name )
+        }
+//        persons = PersonModel.shared.getAll()
+    }
+    
+    func seedLanguages(){
+        let languageNames = ["English", "French", "Russian", "Chechen", "Japanese"]
+        for name in languageNames {
+            LanguageModel.shared.create( name: name )
+        }
+        languages = LanguageModel.shared.getAll()
+    }
+    
+    func seedScores(){
+        ScoreModel.shared.create(person: persons[0], language: languages[0], score: 97)
+        ScoreModel.shared.create(person: persons[0], language: languages[1], score: 88)
+        ScoreModel.shared.create(person: persons[0], language: languages[2], score: 85)
+        
+        ScoreModel.shared.create(person: persons[1], language: languages[0], score: 95)
+        ScoreModel.shared.create(person: persons[1], language: languages[2], score: 87)
+        ScoreModel.shared.create(person: persons[1], language: languages[4], score: 88)
+        
+        ScoreModel.shared.create(person: persons[2], language: languages[3], score: 98)
+        ScoreModel.shared.create(person: persons[2], language: languages[0], score: 87)
+        ScoreModel.shared.create(person: persons[2], language: languages[2], score: 93)
+        
+        ScoreModel.shared.create(person: persons[3], language: languages[0], score: 99)
+        ScoreModel.shared.create(person: persons[3], language: languages[1], score: 92)
+        ScoreModel.shared.create(person: persons[3], language: languages[2], score: 85)
+        
+        ScoreModel.shared.create(person: persons[4], language: languages[4], score: 99)
+        ScoreModel.shared.create(person: persons[4], language: languages[0], score: 92)
+        ScoreModel.shared.create(person: persons[4], language: languages[1], score: 87)
+    }
+    
+    func printScoresbyStudents() {
+        for person in persons {
+            print( "Student", person.name! )
+            
+            if let scores = person.scores {
+                for score in scores {
+                    let s = score as! Score
+                    print( s.language!.name!, "\(s.score)" )
+                }
+            }
+        }
+    }
+    
+    func printScores() {
+        for score in ScoreModel.shared.getAll(){
+            print( score.person!.name, score.language!.name, score.score )
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    }
+}
+
+extension HomeVC: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return persons.count
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableCell", for: indexPath)
+        cell.textLabel?.text = persons[indexPath.row].name
+//        cell.detailTextLabel?.text = "\(persons[indexPath.row].scores?[0])"
+        
+        return cell
     }
-    */
+}
 
+extension HomeVC: UIPickerViewDataSource, UIPickerViewDelegate {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return languages.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return languages[row].name
+    }
 }
