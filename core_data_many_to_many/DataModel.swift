@@ -87,7 +87,6 @@ class ScoreModel {
     func getAll( for language: Language? = nil ) -> [Score]{
         let request = NSFetchRequest<NSFetchRequestResult>( entityName: "Score" )
         
-//        print( "language in predicate:", language?.name )
         if language != nil {
             request.predicate = NSPredicate( format: "language = %@", language! )
         }

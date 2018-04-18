@@ -12,8 +12,8 @@ class HomeVC: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var pickerView: UIPickerView!
-    var persons = PersonModel.shared.getAll()
-    var languages = LanguageModel.shared.getAll()
+    var persons = [Person]()
+    var languages = [Language]()
     var scores = [Score]()
     
     override func viewDidLoad() {
@@ -24,31 +24,26 @@ class HomeVC: UIViewController {
         pickerView.dataSource = self
         pickerView.delegate = self
         
-//        seedPersons()
-//        seedLanguages()
-//        seedScores()
+//        seedData()
+        languages = LanguageModel.shared.getAll()
         scores = ScoreModel.shared.getAll( for: languages[0] )
-//        printScoresbyStudents()
-//        printScores()
     }
     
-    func seedPersons(){
+    func seedData(){
+        
         let personNames = ["Peter", "Yao", "Maret", "Tony", "Namoto"]
         for name in personNames {
             PersonModel.shared.create( name: name )
         }
-//        persons = PersonModel.shared.getAll()
-    }
-    
-    func seedLanguages(){
+        
         let languageNames = ["English", "French", "Russian", "Chechen", "Japanese"]
         for name in languageNames {
             LanguageModel.shared.create( name: name )
         }
-        languages = LanguageModel.shared.getAll()
-    }
-    
-    func seedScores(){
+        
+        var persons = PersonModel.shared.getAll()
+        var languages = LanguageModel.shared.getAll()
+
         ScoreModel.shared.create(person: persons[0], language: languages[0], score: 97)
         ScoreModel.shared.create(person: persons[0], language: languages[1], score: 88)
         ScoreModel.shared.create(person: persons[0], language: languages[2], score: 85)
@@ -69,27 +64,9 @@ class HomeVC: UIViewController {
         ScoreModel.shared.create(person: persons[4], language: languages[0], score: 92)
         ScoreModel.shared.create(person: persons[4], language: languages[1], score: 87)
         ScoreModel.shared.create(person: persons[4], language: languages[3], score: 82)
-    }
-    
-    func printScoresbyStudents() {
-        for person in persons {
-            print( "Student", person.name! )
-            
-            if let scores = person.scores {
-                for score in scores {
-                    let s = score as! Score
-                    print( s.language!.name!, "\(s.score)" )
-                }
-            }
-        }
-    }
-    
-    func printScores() {
-        for score in scores {
-            print( score.person!.name, score.language!.name, score.score )
-        }
-    }
 
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -97,7 +74,6 @@ class HomeVC: UIViewController {
 
 extension HomeVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return persons.count
         return scores.count
     }
     
@@ -105,7 +81,6 @@ extension HomeVC: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableCell", for: indexPath)
         cell.textLabel?.text = scores[indexPath.row].person?.name
         cell.detailTextLabel?.text = String(scores[indexPath.row].score)
-        
         return cell
     }
 }
