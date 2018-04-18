@@ -86,9 +86,11 @@ class ScoreModel {
     
     func getAll( for language: Language? = nil ) -> [Score]{
         let request = NSFetchRequest<NSFetchRequestResult>( entityName: "Score" )
+//        let sort = NSSortDescriptor(key: "Score", ascending: false)
         
         if language != nil {
             request.predicate = NSPredicate( format: "language = %@", language! )
+            request.sortDescriptors = [NSSortDescriptor(key: "score", ascending: false)]
         }
         
         do{

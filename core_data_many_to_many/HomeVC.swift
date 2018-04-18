@@ -12,7 +12,6 @@ class HomeVC: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var pickerView: UIPickerView!
-    var persons = [Person]()
     var languages = [Language]()
     var scores = [Score]()
     
